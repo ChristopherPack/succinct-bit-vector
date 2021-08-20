@@ -6,7 +6,12 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set (CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
+if(UNIX)
 set (CMAKE_CXX_FLAGS "-Wall -O3 -DNDEBUG -march=native -msse4.2 -mpopcnt")
+else()
+set (CMAKE_CXX_FLAGS_DEBUG "/MTd")
+set (CMAKE_CXX_FLAGS_RELEASE "/MT")
+endif()
 
 add_subdirectory(src)
 add_subdirectory(tests)

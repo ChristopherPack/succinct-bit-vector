@@ -8,10 +8,18 @@ add_subdirectory(${GTEST_ROOT})
 add_executable(test_naive_bit_vector
   ${CMAKE_CURRENT_SOURCE_DIR}/test_naive_bit_vector.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/../src/naive_bit_vector.cc)
-target_link_libraries(test_naive_bit_vector gtest gtest_main pthread)
+if(UNIX)
+    target_link_libraries(test_naive_bit_vector gtest gtest_main pthread)
+else()
+target_link_libraries(test_naive_bit_vector gtest gtest_main)
+endif()
 
 add_executable(test_bit_vector
   ${CMAKE_CURRENT_SOURCE_DIR}/test_bit_vector.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/../src/bit_vector.cc
   ${CMAKE_CURRENT_SOURCE_DIR}/../src/naive_bit_vector.cc)
+if(UNIX)
 target_link_libraries(test_bit_vector gtest gtest_main pthread)
+else()
+target_link_libraries(test_bit_vector gtest gtest_main)
+endif()

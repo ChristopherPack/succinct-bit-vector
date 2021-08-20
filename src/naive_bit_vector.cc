@@ -1,6 +1,7 @@
 #include "naive_bit_vector.h"
 
 #include <cstdint>
+#include <iostream>
 
 namespace succinct_bv {
 
