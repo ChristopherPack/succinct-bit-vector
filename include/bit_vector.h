@@ -33,7 +33,28 @@ namespace succinct_bv {
 
         size_t n_bytes() const;
 
+        /**
+         * Assignes a new base vector to the BitVector object via '='
+         * @param bv new base vector as std::vector<bool>
+         */
         void operator=(std::vector<bool>& bv) {
+            _aligned_free(this->b_);
+            this->n_b_ = 0;
+            this->r1_ = {};
+            this->r2_ = {};
+            this->select_table_ = {};
+            this->s_ = {};
+            b_ = nullptr;
+            Init(bv);
+            InitRankIndex();
+            InitSelectIndex();
+        }
+
+        /**
+         * Assignes a new base vector to the BitVector object via '='
+         * @param bv new base vector as std::deque<bool>
+         */
+        void operator=(std::deque<bool>& bv) {
             _aligned_free(this->b_);
             this->n_b_ = 0;
             this->r1_ = {};
