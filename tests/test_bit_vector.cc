@@ -71,6 +71,15 @@ class BitVectorTest : public ::testing::Test {
   std::vector<bool> v5_;
 };
 
+TEST_F(BitVectorTest, AssignWorks) {
+    BitVector bv1(v1_);
+    EXPECT_EQ(0, bv1.Select(0));
+    EXPECT_EQ(2, bv1.Select(1));
+    bv1 = v2_;
+    EXPECT_EQ(111u, bv1.Select(0));
+    EXPECT_EQ(831u, bv1.Select(1));
+}
+
 TEST_F(BitVectorTest, RankWorks) {
   BitVector bv1(v1_);
 

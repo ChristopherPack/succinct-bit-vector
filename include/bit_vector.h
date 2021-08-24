@@ -33,6 +33,19 @@ namespace succinct_bv {
 
         size_t n_bytes() const;
 
+        void operator=(std::vector<bool>& bv) {
+            _aligned_free(this->b_);
+            this->n_b_ = 0;
+            this->r1_ = {};
+            this->r2_ = {};
+            this->select_table_ = {};
+            this->s_ = {};
+            b_ = nullptr;
+            Init(bv);
+            InitRankIndex();
+            InitSelectIndex();
+        }
+
     private:
 
         template<class T> void Init(const T &v) {
@@ -69,7 +82,7 @@ namespace succinct_bv {
             SelectIndexArray(const BitVector *b, const std::vector<uint64_t> &s)
                     : s_(s) {}
 
-            ~SelectIndexArray() {}
+            ~SelectIndexArray() override {}
 
             uint64_t Select(const BitVector *b, int16_t i) const override {
                 return s_[i];
@@ -88,7 +101,7 @@ namespace succinct_bv {
             SelectIndexTree(const BitVector *b, const std::vector<uint64_t> &s)
                     : cumsums_(nullptr) { Init(b, s); }
 
-            ~SelectIndexTree() {
+            ~SelectIndexTree() override {
 #ifdef _MSC_VER
                 if (cumsums_ != nullptr) _aligned_free(cumsums_);
 #elif
