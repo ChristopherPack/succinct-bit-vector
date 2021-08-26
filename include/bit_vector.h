@@ -13,6 +13,8 @@
 namespace succinct_bv {
     class BitVector {
     public:
+        explicit BitVector() : b_(nullptr) {};
+
         explicit BitVector(const std::deque<bool> &v) : b_(nullptr) { Init(v); }
 
         explicit BitVector(const std::vector<bool> &v) : b_(nullptr) { Init(v); }
@@ -25,16 +27,19 @@ namespace succinct_bv {
 #endif
         }
 
+        bool At(uint64_t x) const;
+
         uint64_t Rank(uint64_t x) const;
 
         uint64_t Select(uint64_t i) const {
+            if (b_ == nullptr) throw std::runtime_error("Bitvector is empty.");
             return s_[i / (64 * 64)]->Select(this, i % (64 * 64));
         }
 
         size_t n_bytes() const;
 
         /**
-         * Assignes a new base vector to the BitVector object via '='
+         * Assigns a new base vector to the BitVector object via '='
          * @param bv new base vector as std::vector<bool>
          */
         void operator=(std::vector<bool>& bv) {
@@ -51,7 +56,7 @@ namespace succinct_bv {
         }
 
         /**
-         * Assignes a new base vector to the BitVector object via '='
+         * Assigns a new base vector to the BitVector object via '='
          * @param bv new base vector as std::deque<bool>
          */
         void operator=(std::deque<bool>& bv) {

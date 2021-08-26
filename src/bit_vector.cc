@@ -38,6 +38,11 @@ const std::deque<bool> &v);
 template void BitVector::InitVector<std::vector<bool> >(
 const std::vector<bool> &v);
 
+bool BitVector::At(uint64_t x) const {
+    if (b_ == nullptr) throw std::runtime_error("Bitvector is empty.");
+    return (b_[x / 32] & (1 << (31 - x % 32)));
+}
+
 void BitVector::InitRankIndex() {
     // the number of w^2 bits blocks is [n/w^2]+1.
     // every w^2 bits block contains 2w small (1/2 w bits) blocks.
@@ -62,6 +67,7 @@ void BitVector::InitRankIndex() {
 }
 
 uint64_t BitVector::Rank(uint64_t x) const {
+    if (b_ == nullptr) throw std::runtime_error("Bitvector is empty.");
     size_t r2_index = x / 32;
     uint32_t bits = b_[r2_index] >> (32 - 1 - (x % 32));
 

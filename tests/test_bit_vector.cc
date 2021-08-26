@@ -91,6 +91,45 @@ TEST_F(BitVectorTest, AssignWorks) {
     bv2 = d1_;
     EXPECT_EQ(1,bv2.Select(0));
 
+    BitVector bv3;
+    try {
+        EXPECT_EQ(0, bv3.Select(0));
+        EXPECT_EQ(0, bv3.Select(1));
+        EXPECT_EQ(0, bv3.Rank(0));
+        EXPECT_EQ(0, bv3.Rank(1));
+    }
+    catch (std::runtime_error) {
+        EXPECT_EQ(0,0);
+    }
+    bv3 = v2_;
+    EXPECT_EQ(111u, bv3.Select(0));
+    EXPECT_EQ(831u, bv3.Select(1));
+}
+
+TEST_F(BitVectorTest, AtWorks) {
+    BitVector bv1(v1_);
+    EXPECT_EQ(true,bv1.At(0));
+    EXPECT_EQ(false,bv1.At(1));
+    EXPECT_EQ(true,bv1.At(2));
+    EXPECT_EQ(true,bv1.At(3));
+    EXPECT_EQ(false,bv1.At(4));
+    EXPECT_EQ(false,bv1.At(5));
+    EXPECT_EQ(false,bv1.At(6));
+    EXPECT_EQ(true,bv1.At(7));
+
+    BitVector bv2(v2_);
+    EXPECT_EQ(false, bv2.At(110));
+    EXPECT_EQ(true, bv2.At(111));
+    EXPECT_EQ(false, bv2.At(112));
+    EXPECT_EQ(false, bv2.At(830));
+    EXPECT_EQ(true, bv2.At(831));
+    EXPECT_EQ(false, bv2.At(832));
+    EXPECT_EQ(false, bv2.At(5214));
+    EXPECT_EQ(true, bv2.At(5215));
+    EXPECT_EQ(false, bv2.At(5216));
+    EXPECT_EQ(false, bv2.At(8002));
+    EXPECT_EQ(false, bv2.At(304));
+    EXPECT_EQ(false, bv2.At(3021));
 }
 
 TEST_F(BitVectorTest, RankWorks) {
