@@ -13,7 +13,11 @@ Please build library, include `bit_vector.h` and link library.
 
 `BitVector` can be instantiated from only `deque<bool>` and `vector<bool>`.
 
-`uint64_t Rank(uint64_t x)` and `uint64_t Select(uint64_t i)` are supported.
+`BitVector` can be instantiated with an empty constructor for later assignments.
+
+`bool At(uint64_t x)`, `uint64_t Rank(uint64_t x)` and `uint64_t Select(uint64_t i)` are supported.
+
+`operator=(vector<bool>)` and `operator=(deque<bool>)` are supported.
 
 ### Example
 ```c++
@@ -30,6 +34,11 @@ int main() {
   int r = bv.Rank(30);
   // s = 50
   int s = bv.Select(1);
+  
+  BitVector bv2;
+  bv2 = v;
+  //r2 = 1
+  int r2 = bv2.Rank(30);
 }
 ```
 

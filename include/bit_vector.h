@@ -38,11 +38,14 @@ namespace succinct_bv {
 
         size_t n_bytes() const;
 
+        BitVector& operator=(BitVector const& bv) {
+            throw std::runtime_error("operator = not allowed with BitVector.");
+        }
         /**
          * Assigns a new base vector to the BitVector object via '='
          * @param bv new base vector as std::vector<bool>
          */
-        void operator=(std::vector<bool>& bv) {
+        BitVector& operator=(std::vector<bool> const& bv) {
             _aligned_free(this->b_);
             this->n_b_ = 0;
             this->r1_ = {};
@@ -53,13 +56,14 @@ namespace succinct_bv {
             Init(bv);
             InitRankIndex();
             InitSelectIndex();
+            return *this;
         }
 
         /**
          * Assigns a new base vector to the BitVector object via '='
          * @param bv new base vector as std::deque<bool>
          */
-        void operator=(std::deque<bool>& bv) {
+        BitVector& operator=(std::deque<bool> const& bv) {
             _aligned_free(this->b_);
             this->n_b_ = 0;
             this->r1_ = {};
@@ -70,6 +74,7 @@ namespace succinct_bv {
             Init(bv);
             InitRankIndex();
             InitSelectIndex();
+            return *this;
         }
 
     private:
