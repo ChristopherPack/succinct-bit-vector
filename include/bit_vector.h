@@ -155,7 +155,7 @@ namespace succinct_bv {
             int16_t *cumsums_;
         };
 
-        uint64_t n_b_;
+        uint64_t n_b_ = 0;
         // bit vector storing every 1/2 w bits.
         uint32_t *b_;
         // store rank at i * w^2 in the bit vector. rank is at most w bits.

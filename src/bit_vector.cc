@@ -16,7 +16,7 @@
 using std::vector;
 using namespace succinct_bv;
 
-BitVector::BitVector(const BitVector &copy) {
+BitVector::BitVector(const BitVector &copy) : b_(nullptr) {
     this->n_b_ = copy.n_b_;
     if(copy.b_ != nullptr) {
         posix_memalign((void **) &b_, 32, n_b_ * sizeof(uint32_t));
@@ -35,7 +35,7 @@ BitVector::BitVector(const BitVector &copy) {
     std::copy(copy.s_.begin(),copy.s_.end(), this->s_.begin());
 }
 
-BitVector::BitVector(BitVector &&copy) {
+BitVector::BitVector(BitVector &&copy) : b_(nullptr) {
     swap(*this, copy);
 }
 
