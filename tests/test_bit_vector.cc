@@ -70,7 +70,14 @@ class BitVectorTest : public ::testing::Test {
   std::vector<bool> v4_;
   std::vector<bool> v5_;
   std::deque<bool> d1_ = {false,true,false};
+  std::vector<bool> empty = {false,false,false,false,false};
 };
+
+TEST_F(BitVectorTest, EmptyWorks) {
+    BitVector bv1(empty);
+    EXPECT_EQ(32, bv1.Select(0));
+    EXPECT_EQ(0, bv1.Rank(0));
+}
 
 TEST_F(BitVectorTest, AssignWorks) {
     BitVector bv1(v1_);
@@ -180,6 +187,8 @@ TEST_F(BitVectorTest, SelectWorks) {
   EXPECT_EQ(2, bv1.Select(1));
   EXPECT_EQ(3, bv1.Select(2));
   EXPECT_EQ(7, bv1.Select(3));
+  //TODO: Need some handling of high indices
+  EXPECT_EQ(32, bv1.Select(4));
 
   BitVector bv2(v2_);
 

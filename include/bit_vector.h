@@ -33,6 +33,7 @@ namespace succinct_bv {
 
         uint64_t Select(uint64_t i) const {
             if (b_ == nullptr) throw std::runtime_error("Bitvector is empty.");
+            if(s_.empty()) return 32;
             return s_[i / (64 * 64)]->Select(this, i % (64 * 64));
         }
 

@@ -98,10 +98,12 @@ void BitVector::InitSelectIndex() {
         if ((s.size() == (64 * 64)) || (i == n_b_ - 1)) {
 
             // a block is sparse if the size of block > w^4 bits.
-            if ((s.back() - s.front() + 1) > 64 * 64 * 64 * 64)
-                s_.push_back(std::make_shared<SelectIndexArray>(this, s));
-            else
-                s_.push_back(std::make_shared<SelectIndexTree>(this, s));
+            if(!s.empty()) {
+                if ((s.back() - s.front() + 1) > 64 * 64 * 64 * 64)
+                    s_.push_back(std::make_shared<SelectIndexArray>(this, s));
+                else
+                    s_.push_back(std::make_shared<SelectIndexTree>(this, s));
+            }
 
             s.clear();
             s.swap(next_s);
