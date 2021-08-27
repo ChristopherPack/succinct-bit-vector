@@ -6,6 +6,10 @@
 #include <cstdint>
 #include <iostream>
 
+#ifdef _MSC_VER
+#define posix_memalign(p, a, s) (((*(p)) = _aligned_malloc((s), (a))), *(p) ?0 :errno)
+#endif
+
 #include <deque>
 #include <memory>
 #include <vector>
@@ -21,9 +25,9 @@ namespace succinct_bv {
 
         ~BitVector() {
 #ifdef _MSC_VER
-            _aligned_free(b_);
+            if(this->b_ != nullptr) _aligned_free(b_);
 #elif
-            free(b_);
+            if(this->b_ != nullptr) free(b_);
 #endif
         }
 
@@ -40,14 +44,22 @@ namespace succinct_bv {
         size_t n_bytes() const;
 
         BitVector& operator=(BitVector const& bv) {
-            throw std::runtime_error("operator = not allowed with BitVector.");
+            //throw std::runtime_error("operator = not allowed with BitVector.");
+            if(this->b_ != nullptr) _aligned_free(this->b_);
+            this->n_b_ = bv.n_b_;
+            posix_memalign((void**)&b_, 32, n_b_ * sizeof(uint32_t));
+            std::copy(bv.b_, bv.b_+bv.n_b_, this->b_);
+            this->s_ = {};
+            InitRankIndex();
+            InitSelectIndex();
+            return *this;
         }
         /**
          * Assigns a new base vector to the BitVector object via '='
          * @param bv new base vector as std::vector<bool>
          */
         BitVector& operator=(std::vector<bool> const& bv) {
-            _aligned_free(this->b_);
+            if(this->b_ != nullptr) _aligned_free(this->b_);
             this->n_b_ = 0;
             this->r1_ = {};
             this->r2_ = {};
@@ -55,8 +67,6 @@ namespace succinct_bv {
             this->s_ = {};
             b_ = nullptr;
             Init(bv);
-            InitRankIndex();
-            InitSelectIndex();
             return *this;
         }
 
@@ -65,7 +75,7 @@ namespace succinct_bv {
          * @param bv new base vector as std::deque<bool>
          */
         BitVector& operator=(std::deque<bool> const& bv) {
-            _aligned_free(this->b_);
+            if(this->b_ != nullptr) _aligned_free(this->b_);
             this->n_b_ = 0;
             this->r1_ = {};
             this->r2_ = {};
@@ -73,8 +83,6 @@ namespace succinct_bv {
             this->s_ = {};
             b_ = nullptr;
             Init(bv);
-            InitRankIndex();
-            InitSelectIndex();
             return *this;
         }
 

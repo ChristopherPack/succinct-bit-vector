@@ -71,6 +71,7 @@ class BitVectorTest : public ::testing::Test {
   std::vector<bool> v5_;
   std::deque<bool> d1_ = {false,true,false};
   std::vector<bool> empty = {false,false,false,false,false};
+  std::vector<bool> v6_ = {false,true};
 };
 
 TEST_F(BitVectorTest, EmptyWorks) {
@@ -83,11 +84,11 @@ TEST_F(BitVectorTest, AssignWorks) {
     BitVector bv1(v1_);
     EXPECT_EQ(0, bv1.Select(0));
     EXPECT_EQ(2, bv1.Select(1));
+    bv1 = d1_;
+    EXPECT_EQ(1,bv1.Select(0));
     bv1 = v2_;
     EXPECT_EQ(111u, bv1.Select(0));
     EXPECT_EQ(831u, bv1.Select(1));
-    bv1 = d1_;
-    EXPECT_EQ(1,bv1.Select(0));
 
     BitVector bv2(v2_);
     EXPECT_EQ(111u, bv2.Select(0));
@@ -97,6 +98,9 @@ TEST_F(BitVectorTest, AssignWorks) {
     EXPECT_EQ(2, bv2.Select(1));
     bv2 = d1_;
     EXPECT_EQ(1,bv2.Select(0));
+    bv2 = bv1;
+    EXPECT_EQ(111u, bv2.Select(0));
+    EXPECT_EQ(831u, bv2.Select(1));
 
     BitVector bv3;
     try {
