@@ -21,9 +21,6 @@ BitVector::BitVector(const BitVector &copy) : b_(nullptr) {
     if(copy.b_ != nullptr) {
         posix_memalign((void **) &b_, 32, n_b_ * sizeof(uint32_t));
         std::copy(copy.b_, copy.b_ + copy.n_b_, this->b_);
-    } else
-    {
-        this->b_ = nullptr;
     }
     this->r1_.resize(copy.r1_.size());
     std::copy(copy.r1_.begin(),copy.r1_.end(), this->r1_.begin());
