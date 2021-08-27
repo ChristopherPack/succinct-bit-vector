@@ -15,13 +15,22 @@
 #include <vector>
 
 namespace succinct_bv {
+    class BitVector;
+}
+void swap(succinct_bv::BitVector& a, succinct_bv::BitVector&);
+
+namespace succinct_bv {
     class BitVector {
     public:
-        explicit BitVector() : b_(nullptr) {};
+        BitVector() : b_(nullptr) {};
 
-        explicit BitVector(const std::deque<bool> &v) : b_(nullptr) { Init(v); }
+        BitVector(const BitVector& copy);
 
-        explicit BitVector(const std::vector<bool> &v) : b_(nullptr) { Init(v); }
+        BitVector(BitVector&& copy);
+
+        BitVector(const std::deque<bool> &v) : b_(nullptr) { Init(v); }
+
+        BitVector(const std::vector<bool> &v) : b_(nullptr) { Init(v); }
 
         ~BitVector() {
 #ifdef _MSC_VER
@@ -43,48 +52,21 @@ namespace succinct_bv {
 
         size_t n_bytes() const;
 
-        BitVector& operator=(BitVector const& bv) {
-            //throw std::runtime_error("operator = not allowed with BitVector.");
-            if(this->b_ != nullptr) _aligned_free(this->b_);
-            this->n_b_ = bv.n_b_;
-            posix_memalign((void**)&b_, 32, n_b_ * sizeof(uint32_t));
-            std::copy(bv.b_, bv.b_+bv.n_b_, this->b_);
-            this->s_ = {};
-            InitRankIndex();
-            InitSelectIndex();
-            return *this;
-        }
-        /**
-         * Assigns a new base vector to the BitVector object via '='
-         * @param bv new base vector as std::vector<bool>
-         */
-        BitVector& operator=(std::vector<bool> const& bv) {
-            if(this->b_ != nullptr) _aligned_free(this->b_);
-            this->n_b_ = 0;
-            this->r1_ = {};
-            this->r2_ = {};
-            this->select_table_ = {};
-            this->s_ = {};
-            b_ = nullptr;
-            Init(bv);
-            return *this;
-        }
+        friend void ::swap(BitVector& a, BitVector& b);
 
-        /**
-         * Assigns a new base vector to the BitVector object via '='
-         * @param bv new base vector as std::deque<bool>
-         */
-        BitVector& operator=(std::deque<bool> const& bv) {
-            if(this->b_ != nullptr) _aligned_free(this->b_);
-            this->n_b_ = 0;
-            this->r1_ = {};
-            this->r2_ = {};
-            this->select_table_ = {};
-            this->s_ = {};
-            b_ = nullptr;
-            Init(bv);
-            return *this;
-        }
+        BitVector& operator=(BitVector bv);
+
+        //BitVector& operator=(BitVector& bv);
+
+        BitVector& operator=(BitVector&& copy) noexcept;
+
+        BitVector& operator=(std::vector<bool> const& bv);
+
+        BitVector& operator=(std::vector<bool>&& bv);
+
+        BitVector& operator=(std::deque<bool> const& bv);
+
+        BitVector& operator=(std::deque<bool>&& bv);
 
     private:
 

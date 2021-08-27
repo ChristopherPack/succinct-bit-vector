@@ -16,6 +16,92 @@
 using std::vector;
 using namespace succinct_bv;
 
+BitVector::BitVector(const BitVector &copy) {
+    this->n_b_ = copy.n_b_;
+    posix_memalign((void**)&b_, 32, n_b_ * sizeof(uint32_t));
+    std::copy(copy.b_, copy.b_+copy.n_b_, this->b_);
+    this->r1_.resize(copy.r1_.size());
+    std::copy(copy.r1_.begin(),copy.r1_.end(), this->r1_.begin());
+    this->r2_.resize(copy.r2_.size());
+    std::copy(copy.r2_.begin(),copy.r2_.end(), this->r2_.begin());
+    this->select_table_.resize(copy.select_table_.size());
+    std::copy(copy.select_table_.begin(),copy.select_table_.end(), this->select_table_.begin());
+    this->s_.resize(copy.s_.size());
+    std::copy(copy.s_.begin(),copy.s_.end(), this->s_.begin());
+}
+
+BitVector::BitVector(BitVector &&copy) {
+    swap(*this, copy);
+}
+
+BitVector & BitVector::operator=(BitVector bv) {
+    swap(*this, bv);
+    return *this;
+}
+
+BitVector & BitVector::operator=(BitVector &&copy) noexcept {
+    swap(*this, copy);
+    return *this;
+}
+
+BitVector & BitVector::operator=(std::deque<bool> &&bv) {
+    if(this->b_ != nullptr) _aligned_free(this->b_);
+    b_ = nullptr;
+    this->n_b_ = 0;
+    this->r1_ = {};
+    this->r2_ = {};
+    this->select_table_ = {};
+    this->s_ = {};
+    Init(bv);
+    return *this;
+}
+
+BitVector & BitVector::operator=(std::vector<bool> &&bv) {
+    if(this->b_ != nullptr) _aligned_free(this->b_);
+    b_ = nullptr;
+    this->n_b_ = 0;
+    this->r1_ = {};
+    this->r2_ = {};
+    this->select_table_ = {};
+    this->s_ = {};
+    Init(bv);
+    return *this;
+}
+
+BitVector & BitVector::operator=(const std::deque<bool> &bv) {
+    if(this->b_ != nullptr) _aligned_free(this->b_);
+    b_ = nullptr;
+    this->n_b_ = 0;
+    this->r1_ = {};
+    this->r2_ = {};
+    this->select_table_ = {};
+    this->s_ = {};
+    Init(bv);
+    return *this;
+}
+
+BitVector & BitVector::operator=(const std::vector<bool> &bv) {
+    if(this->b_ != nullptr) _aligned_free(this->b_);
+    b_ = nullptr;
+    this->n_b_ = 0;
+    this->r1_ = {};
+    this->r2_ = {};
+    this->select_table_ = {};
+    this->s_ = {};
+    Init(bv);
+    return *this;
+}
+
+void swap(succinct_bv::BitVector& a, succinct_bv::BitVector& b) {
+    using std::swap;
+    swap(a.b_,b.b_);
+    swap(a.n_b_,b.n_b_);
+    swap(a.r1_,b.r1_);
+    swap(a.r2_,b.r2_);
+    swap(a.select_table_,b.select_table_);
+    swap(a.s_,b.s_);
+}
+
 template<class T>
 void BitVector::InitVector(const T &v) {
     uint64_t n = v.size();
