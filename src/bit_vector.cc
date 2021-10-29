@@ -26,8 +26,6 @@ BitVector::BitVector(const BitVector &copy) : b_(nullptr) {
     std::copy(copy.r1_.begin(),copy.r1_.end(), this->r1_.begin());
     this->r2_.resize(copy.r2_.size());
     std::copy(copy.r2_.begin(),copy.r2_.end(), this->r2_.begin());
-    this->select_table_.resize(copy.select_table_.size());
-    std::copy(copy.select_table_.begin(),copy.select_table_.end(), this->select_table_.begin());
     this->s_.resize(copy.s_.size());
     std::copy(copy.s_.begin(),copy.s_.end(), this->s_.begin());
 }
@@ -52,7 +50,6 @@ BitVector & BitVector::operator=(std::deque<bool> &&bv) {
     this->n_b_ = 0;
     this->r1_ = {};
     this->r2_ = {};
-    this->select_table_ = {};
     this->s_ = {};
     Init(bv);
     return *this;
@@ -64,7 +61,6 @@ BitVector & BitVector::operator=(std::vector<bool> &&bv) {
     this->n_b_ = 0;
     this->r1_ = {};
     this->r2_ = {};
-    this->select_table_ = {};
     this->s_ = {};
     Init(bv);
     return *this;
@@ -76,7 +72,6 @@ BitVector & BitVector::operator=(const std::deque<bool> &bv) {
     this->n_b_ = 0;
     this->r1_ = {};
     this->r2_ = {};
-    this->select_table_ = {};
     this->s_ = {};
     Init(bv);
     return *this;
@@ -88,7 +83,6 @@ BitVector & BitVector::operator=(const std::vector<bool> &bv) {
     this->n_b_ = 0;
     this->r1_ = {};
     this->r2_ = {};
-    this->select_table_ = {};
     this->s_ = {};
     Init(bv);
     return *this;
@@ -100,7 +94,6 @@ void swap(succinct_bv::BitVector& a, succinct_bv::BitVector& b) {
     swap(a.n_b_,b.n_b_);
     swap(a.r1_,b.r1_);
     swap(a.r2_,b.r2_);
-    swap(a.select_table_,b.select_table_);
     swap(a.s_,b.s_);
 }
 
@@ -130,6 +123,8 @@ bool BitVector::At(uint64_t x) const {
     if (b_ == nullptr) throw std::runtime_error("Bitvector is empty.");
     return (b_[x / 32] & (1 << (31 - x % 32)));
 }
+
+std::vector<uint8_t> BitVector::select_table_ = std::vector<uint8_t>();
 
 void BitVector::InitRankIndex() {
     // the number of w^2 bits blocks is [n/w^2]+1.
@@ -200,6 +195,9 @@ void BitVector::InitSelectIndex() {
 }
 
 void BitVector::InitSelectTable() {
+    if(!select_table_.empty()) {
+        return;
+    }
     select_table_.resize(8 * 256, 8);
 
     for (size_t i = 0; i < 256; ++i) {

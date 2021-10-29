@@ -164,7 +164,7 @@ namespace succinct_bv {
         std::vector<uint16_t> r2_;
         std::vector<std::shared_ptr<SelectIndex> > s_;
         // for compute select, store 8 bits pattern table instead of 1/2 w bits pattern table.
-        std::vector<uint8_t> select_table_;
+        static std::vector<uint8_t> select_table_;
     };
 }
 
