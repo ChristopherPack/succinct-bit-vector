@@ -124,7 +124,7 @@ bool BitVector::At(uint64_t x) const {
     return (b_[x / 32] & (1 << (31 - x % 32)));
 }
 
-std::vector<uint8_t> BitVector::select_table_ = std::vector<uint8_t>();
+//std::vector<uint8_t> BitVector::select_table_ = std::vector<uint8_t>();
 
 void BitVector::InitRankIndex() {
     // the number of w^2 bits blocks is [n/w^2]+1.
@@ -142,7 +142,7 @@ void BitVector::InitRankIndex() {
             r2_sum = 0;
         }
 
-        r2_.push_back(r2_sum);
+        r2_.push_back(static_cast<uint16_t>(r2_sum));
         uint64_t count = _mm_popcnt_u32(b_[i]);
         r1_sum += count;
         r2_sum += count;
@@ -159,7 +159,7 @@ uint64_t BitVector::Rank(uint64_t x) const {
 }
 
 void BitVector::InitSelectIndex() {
-    InitSelectTable();
+    //InitSelectTable();
 
     vector<uint64_t> s;
     vector<uint64_t> next_s;
@@ -194,7 +194,26 @@ void BitVector::InitSelectIndex() {
     }
 }
 
-void BitVector::InitSelectTable() {
+/*void BitVector::InitSelectTable() {
+    if(!select_table_.empty()) {
+        return;
+    }
+    select_table_.resize(8 * 256, 8);
+
+    for (size_t i = 0; i < 256; ++i) {
+        uint16_t pattern = static_cast<uint16_t>(i);
+        uint16_t index = 0;
+
+        for (uint8_t j = 0; j < 8; ++j) {
+            if (pattern & (1u << (8 - 1 - j))) {
+                select_table_[(index << 8) + pattern] = j;
+                ++index;
+            }
+        }
+    }
+}*/
+
+BitVector::SelectTable::SelectTable() {
     if(!select_table_.empty()) {
         return;
     }
@@ -223,7 +242,7 @@ uint8_t BitVector::SelectOn32bits(uint32_t bits, uint8_t i) const {
         i -= count;
     }
 
-    return j * 8 + select_table_[(i << 8) + ((bits >> ((3 - j) * 8)) & 0xffU)];
+    return j * 8 + selectTable.select_table_[(i << 8) + ((bits >> ((3 - j) * 8)) & 0xffU)];
 }
 
 size_t BitVector::n_bytes() const {
@@ -233,7 +252,7 @@ size_t BitVector::n_bytes() const {
     for (auto &v : s_)
         n += v->n_bytes();
 
-    n += select_table_.capacity() * sizeof(uint8_t);
+    n += selectTable.select_table_.capacity() * sizeof(uint8_t);
 
     return n;
 }
@@ -274,7 +293,7 @@ void BitVector::SelectIndexTree::Init(const BitVector *b,
     size_t start = n_inner_;
 
     for (int h = height_ - 1; h >= 0; --h) {
-        size_t m = std::pow(8, h);
+        size_t m = static_cast<size_t>(std::pow(8, h));
         start -= m;
 
         for (size_t i = 0; i < m; ++i) {
@@ -315,9 +334,9 @@ void BitVector::SelectIndexTree::Init(const BitVector *b,
     }
 }
 
-uint64_t BitVector::SelectIndexTree::Select(const BitVector *b, int16_t i) const
+uint64_t BitVector::SelectIndexTree::Select(const BitVector *b, uint16_t i) const
 {
-    i += first_block_offset_;
+    i += static_cast<uint16_t>(first_block_offset_);
     unsigned int node = 0;
     unsigned int child = 0;
 
@@ -336,7 +355,7 @@ uint64_t BitVector::SelectIndexTree::Select(const BitVector *b, int16_t i) const
     }
 
     uint64_t block_index = first_block_index_ + node - n_inner_;
-    uint64_t l = b->SelectOn32bits(b->b_[block_index], i);
+    uint64_t l = b->SelectOn32bits(b->b_[block_index], static_cast<uint8_t>(i));
 
     return l + block_index * 32;
 }

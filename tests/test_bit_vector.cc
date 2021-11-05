@@ -55,7 +55,7 @@ class BitVectorTest : public ::testing::Test {
       }
 
       if (!sparse_mode && rand() % 2 == 0) {
-        ++n_mix_true_;;
+        ++n_mix_true_;
         v5_[i] = true;
       }
     }

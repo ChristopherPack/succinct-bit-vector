@@ -86,7 +86,7 @@ namespace succinct_bv {
 
         void InitSelectIndex();
 
-        void InitSelectTable();
+        //void InitSelectTable();
 
         uint8_t SelectOn32bits(uint32_t bits, uint8_t i) const;
 
@@ -94,7 +94,7 @@ namespace succinct_bv {
         public:
             virtual ~SelectIndex() = 0;
 
-            virtual uint64_t Select(const BitVector *b, int16_t i) const = 0;
+            virtual uint64_t Select(const BitVector *b, uint16_t i) const = 0;
 
             virtual size_t n_bytes() const = 0;
         };
@@ -106,7 +106,7 @@ namespace succinct_bv {
 
             ~SelectIndexArray() override {}
 
-            uint64_t Select(const BitVector *b, int16_t i) const override {
+            uint64_t Select(const BitVector *b, uint16_t i) const override {
                 return s_[i];
             }
 
@@ -131,7 +131,7 @@ namespace succinct_bv {
 #endif
                  }
 
-            uint64_t Select(const BitVector *b, int16_t i) const override;
+            uint64_t Select(const BitVector *b, uint16_t i) const override;
 
             size_t n_bytes() const override {
                 return 8 * n_inner_ * sizeof(uint16_t);
@@ -143,8 +143,8 @@ namespace succinct_bv {
             void Init(const BitVector *b, const std::vector<uint64_t> &s);
 
             int height_;
-            unsigned int n_inner_;
-            unsigned int first_block_index_;
+            size_t n_inner_;
+            uint64_t first_block_index_;
             uint64_t first_block_offset_;
             /**
              This array stores cumsum of #ones in subtree for each node.
@@ -153,6 +153,12 @@ namespace succinct_bv {
              128 bits is needed per node because each node uses 8 int16_t.
              */
             int16_t *cumsums_;
+        };
+
+        class SelectTable {
+        public:
+            SelectTable();
+            std::vector<uint8_t> select_table_;
         };
 
         uint64_t n_b_ = 0;
@@ -164,7 +170,7 @@ namespace succinct_bv {
         std::vector<uint16_t> r2_;
         std::vector<std::shared_ptr<SelectIndex> > s_;
         // for compute select, store 8 bits pattern table instead of 1/2 w bits pattern table.
-        static std::vector<uint8_t> select_table_;
+        static inline SelectTable selectTable = SelectTable();
     };
 }
 
