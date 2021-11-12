@@ -35,7 +35,7 @@ namespace succinct_bv {
         ~BitVector() {
 #ifdef _MSC_VER
             if(this->b_ != nullptr) _aligned_free(b_);
-#elif
+#else
             if(this->b_ != nullptr) free(b_);
 #endif
         }
@@ -126,7 +126,7 @@ namespace succinct_bv {
             ~SelectIndexTree() override {
 #ifdef _MSC_VER
                 if (cumsums_ != nullptr) _aligned_free(cumsums_);
-#elif
+#else
                 if (cumsums_ != nullptr) free(cumsums_);
 #endif
                  }

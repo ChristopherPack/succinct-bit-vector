@@ -9,6 +9,16 @@
 #include <nmmintrin.h>
 #include <immintrin.h>
 
+//Uncomment if your processor does not provide
+/*uint32_t _tzcnt_u32(uint32_t x) {
+    uint32_t tmp = 0;
+    uint32_t dst = 0;
+    while((tmp < 32) && ((x>>tmp)&1) == 0) {
+        tmp++;
+        dst++;
+    }
+}*/
+
 #ifdef _MSC_VER
 #define posix_memalign(p, a, s) (((*(p)) = _aligned_malloc((s), (a))), *(p) ?0 :errno)
 #endif
@@ -45,7 +55,11 @@ BitVector & BitVector::operator=(BitVector &&copy) noexcept {
 }
 
 BitVector & BitVector::operator=(std::deque<bool> &&bv) {
+#ifdef _MSC_VER
     if(this->b_ != nullptr) _aligned_free(this->b_);
+#else
+    if(this->b_ != nullptr) free(b_);
+#endif
     b_ = nullptr;
     this->n_b_ = 0;
     this->r1_ = {};
@@ -56,7 +70,11 @@ BitVector & BitVector::operator=(std::deque<bool> &&bv) {
 }
 
 BitVector & BitVector::operator=(std::vector<bool> &&bv) {
+#ifdef _MSC_VER
     if(this->b_ != nullptr) _aligned_free(this->b_);
+#else
+    if(this->b_ != nullptr) free(b_);
+#endif
     b_ = nullptr;
     this->n_b_ = 0;
     this->r1_ = {};
@@ -67,7 +85,12 @@ BitVector & BitVector::operator=(std::vector<bool> &&bv) {
 }
 
 BitVector & BitVector::operator=(const std::deque<bool> &bv) {
+
+#ifdef _MSC_VER
     if(this->b_ != nullptr) _aligned_free(this->b_);
+#else
+    if(this->b_ != nullptr) free(b_);
+#endif
     b_ = nullptr;
     this->n_b_ = 0;
     this->r1_ = {};
@@ -78,7 +101,12 @@ BitVector & BitVector::operator=(const std::deque<bool> &bv) {
 }
 
 BitVector & BitVector::operator=(const std::vector<bool> &bv) {
+
+#ifdef _MSC_VER
     if(this->b_ != nullptr) _aligned_free(this->b_);
+#else
+    if(this->b_ != nullptr) free(b_);
+#endif
     b_ = nullptr;
     this->n_b_ = 0;
     this->r1_ = {};

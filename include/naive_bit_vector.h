@@ -2,6 +2,7 @@
 #define NAIVE_BIT_VECTOR_H_
 
 #include <cmath>
+#include <cstdint>
 
 #include <deque>
 #include <vector>
