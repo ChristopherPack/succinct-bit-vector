@@ -11,9 +11,11 @@ set (CMAKE_CXX_FLAGS_RELEASE "/MT")
 endif()
 
 add_subdirectory(src)
-add_subdirectory(tests)
-enable_testing()
+if (NOT(UNIX))
+    add_subdirectory(tests)
+    enable_testing()
 
-add_test(NAME NaiveBitVectorTest COMMAND test_naive_bit_vector)
-add_test(NAME BitVectorTest COMMAND test_bit_vector)
+    add_test(NAME NaiveBitVectorTest COMMAND test_naive_bit_vector)
+    add_test(NAME BitVectorTest COMMAND test_bit_vector)
+endif ()
 
