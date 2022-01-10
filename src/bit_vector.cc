@@ -368,6 +368,7 @@ uint64_t BitVector::SelectIndexTree::Select(const BitVector *b, uint16_t i) cons
     unsigned int node = 0;
     unsigned int child = 0;
 
+    //Following Init -> SelectIndexTree() -> InitSelectIndex, height_ should have an upper bound, since s is at most 64 * 64 bit large. Therefore O(1).
     for (int j = 0; j < height_; ++j) {
         __m128i value = _mm_set_epi16(i, i, i, i, i, i, i, i);
         __m128i *ptr = reinterpret_cast<__m128i*>(&cumsums_[8 * node]);
